@@ -15,6 +15,14 @@ function Chat(props) {
     { name: "Jen", text: "Bien et vous ?" },
     { name: "Manu", text: "Ca va" },
     { name: "Manu", text: "☺" },
+    { name: "Manu", text: "Salut tout le monde" },
+    { name: "Abi", text: "Salut Manu, moi c'est Abi" },
+    { name: "Jen", text: "Salut Manu, aalut Abi, moi c'est Jen" },
+    { name: "Manu", text: "Salut Jen, salut Abi" },
+    { name: "Abi", text: "Salut Jen, comment ca va ?" },
+    { name: "Jen", text: "Bien et vous ?" },
+    { name: "Manu", text: "Ca va" },
+    { name: "Manu", text: "☺" },
   ];
   var messages = data.map((message, i) => {
     return (
@@ -34,7 +42,12 @@ function Chat(props) {
     <View style={styles.container}>
       <ScrollView style={{ flex: 1, marginTop: 50 }}>{messages}</ScrollView>
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
-      <View style={{ flexDirection: "row", alignItems: "flex-end", marginBottom:3, marginLeft:"3%", marginTop:0, maxHeight:200 }}>
+      <View style={{
+        flexDirection: "row",
+        alignItems: "flex-end", 
+        marginBottom:"3%", 
+        marginLeft:"3%", 
+         }}>
         <Input placeholder="Your Message" containerStyle={styles.input} multiline = {true} >
         </Input>
         <View
@@ -44,7 +57,7 @@ function Chat(props) {
         </View>
       </View>
       </KeyboardAvoidingView>
-      <StatusBar style="auto" />
+      {/* <StatusBar style="auto" /> */}
     </View>
   );
 }
@@ -65,7 +78,7 @@ const styles = StyleSheet.create({
   },
   input: {
     width: "85%",
-    height: "70%",
+    maxHeight: 100,
     backgroundColor: "#ffffff",
     borderRadius: 10,
     position: "relative"
