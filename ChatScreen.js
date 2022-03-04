@@ -2,8 +2,9 @@ import { StatusBar } from "expo-status-bar";
 import { ScrollView, StyleSheet, Text, View, KeyboardAvoidingView } from "react-native";
 import { ListItem, Input } from "react-native-elements";
 import { Ionicons } from "@expo/vector-icons";
+import { connect } from "react-redux";
 
-export default function Chat() {
+function Chat(props) {
 
   var data = [
     { name: "Manu", text: "Salut tout le monde" },
@@ -39,7 +40,7 @@ export default function Chat() {
         <View
           style={{ width: "15%", flexDirection: "row",  justifyContent: "center"}}
         >
-          <Ionicons name="ios-send" size={40} color="#ff7d00" onPress={()=>console.log('send message')}/>
+          <Ionicons name="ios-send" size={40} color="#ff7d00" onPress={()=>console.log('send message by', props.pseudo)}/>
         </View>
       </View>
       </KeyboardAvoidingView>
@@ -47,6 +48,15 @@ export default function Chat() {
     </View>
   );
 }
+
+function mapStateToProps(state){
+  return {pseudo: state.pseudo}
+}
+
+export default connect(
+  mapStateToProps,
+  null
+)(Chat)
 
 const styles = StyleSheet.create({
   container: {
