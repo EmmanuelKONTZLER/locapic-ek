@@ -2,8 +2,9 @@ import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Button, Input } from "react-native-elements";
+import {connect} from 'react-redux';
 
-export default function Home(props) {
+function Home(props) {
 
   const [pseudo, setPseudo] = useState("")
 
@@ -20,12 +21,25 @@ export default function Home(props) {
       <Button
         title="Go to ChatScreen"
         buttonStyle={{ backgroundColor: "#6096ba" }}
-        onPress={() =>{console.log(pseudo), props.navigation.navigate("BottomNav")}}
+        onPress={() =>{props.sendPseudo(pseudo), props.navigation.navigate("BottomNav")}}
       />
       <StatusBar style="auto" />
     </View>
   );
 }
+
+function mapDispatchToProps(dispatch) {
+  return {
+    sendPseudo: function(pseudo) {
+    dispatch( {type: 'sendPseudo', pseudo: pseudo })
+    }
+  }
+}
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(Home);
 
 const styles = StyleSheet.create({
   container: {

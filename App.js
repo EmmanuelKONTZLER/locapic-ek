@@ -1,5 +1,8 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+
+// Navigation
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -7,9 +10,14 @@ import Home from "./HomeScreen";
 import Chat from "./ChatScreen";
 import Map from "./MapScreen";
 import Interest from "./InterestScreen";
-import { Ionicons } from '@expo/vector-icons';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+
+// Redux / Store
+import { createStore, combineReducers } from "redux";
+import { Provider } from "react-redux";
+import pseudo from "./reducers/pseudo";
+const store = createStore(combineReducers({ pseudo }));
 
 function BottomNav() {
   return (
@@ -32,9 +40,9 @@ function BottomNav() {
       tabBarOptions={{
         activeTintColor: "#ff7d00",
         inactiveTintColor: "#e0e1dd",
-        style : {
-          backgroundColor : "#6096ba"
-        }
+        style: {
+          backgroundColor: "#6096ba",
+        },
       }}
     >
       <Tab.Screen name="Chat" component={Chat} />
@@ -46,12 +54,14 @@ function BottomNav() {
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{headerShown: false}}>
-        <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen name="BottomNav" component={BottomNav} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen name="BottomNav" component={BottomNav} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
   );
 }
 
