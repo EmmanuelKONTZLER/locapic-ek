@@ -6,7 +6,7 @@ import {connect} from 'react-redux';
 
 function Home(props) {
 
-  const [pseudo, setPseudo] = useState("")
+  const [pseudo, setPseudo] = useState("Manu")
 
   return (
     <View style={styles.container}>
