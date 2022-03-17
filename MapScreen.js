@@ -80,6 +80,7 @@ function Map(props) {
         desc: POIDesc,
       },
     ]);
+    props.sendPOI({ lat: POI.position.lat, lon: POI.position.lon, title: POITitle, desc: POIDesc})
     setPOI({});
     setPOITitle("");
     setPOIDesc("");
@@ -186,7 +187,15 @@ function mapStateToProps(state) {
   return { pseudo: state.pseudo };
 }
 
-export default connect(mapStateToProps, null)(Map);
+function mapDispatchToProps(dispatch) {
+  return {
+    sendPOI: function(poi) {
+    dispatch( {type: 'sendPoi', poi: poi })
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Map);
 
 const styles = StyleSheet.create({
   container: {

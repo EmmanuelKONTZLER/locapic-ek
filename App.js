@@ -18,7 +18,8 @@ const Tab = createBottomTabNavigator();
 import { createStore, combineReducers } from "redux";
 import { Provider } from "react-redux";
 import pseudo from "./reducers/pseudo";
-const store = createStore(combineReducers({ pseudo }));
+import poi from "./reducers/poi";
+const store = createStore(combineReducers({ pseudo, poi }));
 
 function BottomNav() {
   return (
