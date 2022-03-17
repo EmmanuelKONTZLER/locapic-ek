@@ -19,6 +19,13 @@ function Interest(props) {
     getPoiFromStore();
   }, [isFocused]);
 
+  var deletePoi = (i) => {
+    var updatePoi = [...poiList];
+    updatePoi.splice(i,1)
+    setPoiList(updatePoi)
+    props.deletePoi(i)
+  }
+
   let myPoi = poiList.map((poi, i) => {
     return (
       <ListItem
@@ -31,7 +38,7 @@ function Interest(props) {
             <ListItem.Title>Titre : {poi.title}</ListItem.Title>
             <ListItem.Subtitle>Desc : {poi.desc}</ListItem.Subtitle>
             </View>
-            <Ionicons name="ios-trash" size={24} color="grey" onPress={() => console.log(i)} />
+            <Ionicons name="ios-trash" size={24} color="grey" onPress={() => deletePoi(i)} />
           </ListItem.Content>
         </ListItem>
 
@@ -51,7 +58,15 @@ function mapStateToProps(state) {
   return { poi: state.poi };
 }
 
-export default connect(mapStateToProps, null)(Interest);
+function mapDispatchToProps(dispatch) {
+  return {
+    deletePoi: function(index) {
+    dispatch( {type: 'deletePoi', index: index })
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Interest);
 
 const styles = StyleSheet.create({
   container: {
