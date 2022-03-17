@@ -7,9 +7,11 @@ import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Button, Overlay, Input } from "react-native-elements";
 import { Ionicons } from "@expo/vector-icons";
+import { useIsFocused } from "@react-navigation/native";
 
 
 function Map(props) {
+  const isFocused = useIsFocused();
   const [pseudo, setPseudo] = useState("");
   const [firstLatitude, setFirstLatitude] = useState();
   const [firstLongitude, setFirstLongitude] = useState();
@@ -25,6 +27,7 @@ function Map(props) {
   useEffect(() => {
     async function askPermissions() {
       setPseudo(props.pseudo);
+      setPOIList(props.poi)
       var { status } = await Permissions.askAsync(Permissions.LOCATION);
       if (status === "granted") {
         // Position à la connexion → Servira à centrer la carte sur
@@ -41,7 +44,7 @@ function Map(props) {
       }
     }
     askPermissions();
-  }, []);
+  }, [isFocused]);
 
   // Option du bouton d'activation du mode POI en fonction du statut
   var buttonOption = {};
@@ -184,7 +187,7 @@ function Map(props) {
 }
 
 function mapStateToProps(state) {
-  return { pseudo: state.pseudo };
+  return { pseudo: state.pseudo, poi: state.poi };
 }
 
 function mapDispatchToProps(dispatch) {
