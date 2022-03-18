@@ -21,7 +21,17 @@ function Chat(props) {
   useEffect(() => {
    
     socket.on('sendMessageFromBack', (newMessage)=> {
-      setMessages([...messages, newMessage])
+      var myRegex1 = /:\)/gi;
+      var myRegex2 = /:\(/gi;
+      var myRegex3 = /:p/gi;
+      var myRegex4 = /[^\s]*Fuck[^\s]*/gi
+      var monTexte = newMessage.text
+      monTexte = monTexte.replace(myRegex1, "\u263A");
+      monTexte = monTexte.replace(myRegex2, "\u2639");
+      monTexte = monTexte.replace(myRegex3, "\uD83D\uDE1B")
+      monTexte = monTexte.replace(myRegex4, "***")
+
+      setMessages([...messages, {name: newMessage.name, text:monTexte}])
     });
     
   }, [messages]);
