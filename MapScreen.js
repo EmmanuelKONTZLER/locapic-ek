@@ -32,19 +32,19 @@ function Map(props) {
       if (status === "granted") {
         // Position à la connexion → Servira à centrer la carte sur
         var location = await Location.getCurrentPositionAsync({});
-        console.log("location", location.coords);
         setFirstLatitude(location.coords.latitude);
         setFirstLongitude(location.coords.longitude);
         // Position actualisée
-        Location.watchPositionAsync({ distanceInterval: 1 }, (location) => {
-          console.log("updated location", location);
+        Location.watchPositionAsync({ distanceInterval: 1 }, (loc) => {
+          setMyLatitude(loc.coords.latitude);
+          setMyLongitude(loc.coords.longitude);
         });
-        setMyLatitude(location.coords.latitude);
-        setMyLongitude(location.coords.longitude);
       }
     }
     askPermissions();
   }, [isFocused]);
+
+  console.log(pseudo, 'lat: ', myLatitude, "long: ", myLongitude)
 
   // Option du bouton d'activation du mode POI en fonction du statut
   var buttonOption = {};
