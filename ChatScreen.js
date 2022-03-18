@@ -11,7 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { connect } from "react-redux";
 import socketIOClient from "socket.io-client";
 import { useEffect, useState } from "react";
-var socket = socketIOClient("http://192.168.1.19:3000");
+var socket = socketIOClient("https://locapic-backend-ek.herokuapp.com/");
 
 function Chat(props) {
 
@@ -74,7 +74,6 @@ function Chat(props) {
               size={40}
               color="#ff7d00"
               onPress={() => {
-                console.log("message envoyé"),
                 socket.emit("sendMessage", {name:props.pseudo, text:messageToSend}),
                 setMessageToSend()
               }}
