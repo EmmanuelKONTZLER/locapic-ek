@@ -11,7 +11,7 @@ function Home(props) {
 
   useEffect(() => {
     function getPseudoInLocalStorage() {
-      AsyncStorage.getItem("firstName", function (error, data) {
+      AsyncStorage.getItem("pseudo", function (error, data) {
         setPseudoInLocalStorage(data);
       });
     }
@@ -27,7 +27,7 @@ function Home(props) {
           title="Logout"
           buttonStyle={{ backgroundColor: "#6096ba", marginTop: 50 }}
           onPress={() => {
-            AsyncStorage.removeItem("firstName"),
+            AsyncStorage.removeItem("pseudo"),
             setPseudoInLocalStorage();
           }}
         />
@@ -51,7 +51,7 @@ function Home(props) {
         buttonStyle={{ backgroundColor: "#6096ba" }}
         onPress={() => {
           props.sendPseudo(pseudo),
-          AsyncStorage.setItem("firstName", pseudo),
+          AsyncStorage.setItem("pseudo", pseudo),
           props.navigation.navigate("BottomNav")
         }}
       />
