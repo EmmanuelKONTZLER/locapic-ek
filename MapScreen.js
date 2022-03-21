@@ -8,6 +8,7 @@ import { connect } from "react-redux";
 import { Button, Overlay, Input } from "react-native-elements";
 import { Ionicons } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 function Map(props) {
@@ -27,8 +28,14 @@ function Map(props) {
   useEffect(() => {
     async function askPermissions() {
       setPseudo(props.pseudo);
-      setPOIList(props.poi)
+      // setPOIList(props.poi)
       var { status } = await Permissions.askAsync(Permissions.LOCATION);
+      AsyncStorage.getItem("poi", function (error, data) {
+        console.log("poiinlocalstorage", JSON.parse(data));
+        data = JSON.parse(data)
+        data = data.filter(e=>e.pseudo === props.pseudo)
+        setPOIList(data)
+      });
       if (status === "granted") {
         // Position à la connexion → Servira à centrer la carte sur
         var location = await Location.getCurrentPositionAsync({});
@@ -77,13 +84,23 @@ function Map(props) {
     setPOIList([
       ...POIList,
       {
+        pseudo: props.pseudo,
         lat: POI.position.lat,
         lon: POI.position.lon,
         title: POITitle,
         desc: POIDesc,
       },
     ]);
-    props.sendPOI({ lat: POI.position.lat, lon: POI.position.lon, title: POITitle, desc: POIDesc})
+    // props.sendPOI({ lat: POI.position.lat, lon: POI.position.lon, title: POITitle, desc: POIDesc})
+    AsyncStorage.setItem("poi", JSON.stringify([
+      ...POIList,
+      { pseudo: props.pseudo,
+        lat: POI.position.lat,
+        lon: POI.position.lon,
+        title: POITitle,
+        desc: POIDesc,
+      },
+    ]))
     setPOI({});
     setPOITitle("");
     setPOIDesc("");
