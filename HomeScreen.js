@@ -24,8 +24,16 @@ function Home(props) {
         <Text style={styles.locapic}>LOCAPIC</Text>
         <Text style={styles.welcome}>Welcome back {pseudoInLocalStorage}</Text>
         <Button
+        title="Go to ChatScreen"
+        buttonStyle={{ backgroundColor: "#6096ba", marginTop: 50, }}
+        onPress={() => {
+          props.sendPseudo(pseudo),
+          props.navigation.navigate("BottomNav")
+        }}
+      />
+        <Button
           title="Logout"
-          buttonStyle={{ backgroundColor: "#6096ba", marginTop: 50 }}
+          buttonStyle={{ backgroundColor: "red", marginTop: 10, borderRadius:10 }}
           onPress={() => {
             AsyncStorage.removeItem("pseudo"),
             setPseudoInLocalStorage();
