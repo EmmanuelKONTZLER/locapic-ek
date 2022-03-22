@@ -1,4 +1,6 @@
-console.disableYellowBox = true;
+// console.disableYellowBox = true;
+import { LogBox } from 'react-native';
+LogBox.ignoreAllLogs(true)
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
