@@ -2,14 +2,13 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
-import * as Permissions from "expo-permissions";
+// import * as Permissions from "expo-permissions";
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Button, Overlay, Input } from "react-native-elements";
 import { Ionicons } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
 
 function Map(props) {
   const isFocused = useIsFocused();
@@ -24,17 +23,17 @@ function Map(props) {
   const [POIDesc, setPOIDesc] = useState("");
   const [POIList, setPOIList] = useState([]);
   const [overlayIsVisible, setOverlayIsVisible] = useState(false);
+  const [allPoiList, setAllPoiList] = useState([]);
 
   useEffect(() => {
     async function askPermissions() {
       setPseudo(props.pseudo);
-      // setPOIList(props.poi)
-      var { status } = await Permissions.askAsync(Permissions.LOCATION);
+      let { status } = await Location.requestForegroundPermissionsAsync();
       AsyncStorage.getItem("poi", function (error, data) {
-        console.log("poiinlocalstorage", JSON.parse(data));
-        data = JSON.parse(data)
-        data = data.filter(e=>e.pseudo === props.pseudo)
-        setPOIList(data)
+        data = JSON.parse(data);
+        setAllPoiList(data);
+        data = data.filter((e) => e.pseudo === props.pseudo);
+        setPOIList(data);
       });
       if (status === "granted") {
         // Position à la connexion → Servira à centrer la carte sur
@@ -50,8 +49,6 @@ function Map(props) {
     }
     askPermissions();
   }, [isFocused]);
-
-  console.log(pseudo, 'lat: ', myLatitude, "long: ", myLongitude)
 
   // Option du bouton d'activation du mode POI en fonction du statut
   var buttonOption = {};
@@ -91,16 +88,20 @@ function Map(props) {
         desc: POIDesc,
       },
     ]);
-    // props.sendPOI({ lat: POI.position.lat, lon: POI.position.lon, title: POITitle, desc: POIDesc})
-    AsyncStorage.setItem("poi", JSON.stringify([
-      ...POIList,
-      { pseudo: props.pseudo,
+
+    let poiToSave = [
+      ...allPoiList,
+      {
+        pseudo: props.pseudo,
         lat: POI.position.lat,
         lon: POI.position.lon,
         title: POITitle,
         desc: POIDesc,
       },
-    ]))
+    ];
+    // Sauvegarde de tous les POI de tous les users dans l'AsyncStorage
+    AsyncStorage.setItem("poi", JSON.stringify(poiToSave));
+
     setPOI({});
     setPOITitle("");
     setPOIDesc("");
@@ -119,7 +120,6 @@ function Map(props) {
 
   // Création des Markers de POI
   if (POIList.length > 0) {
-    console.log("POIList", POIList);
     var POIMarkers = POIList.map((element, i) => {
       return (
         <Marker
@@ -209,10 +209,10 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    sendPOI: function(poi) {
-    dispatch( {type: 'sendPoi', poi: poi })
-    }
-  }
+    sendPOI: function (poi) {
+      dispatch({ type: "sendPoi", poi: poi });
+    },
+  };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Map);
