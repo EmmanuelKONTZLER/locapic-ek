@@ -4,66 +4,78 @@ import { StyleSheet, Text, View, ScrollView } from "react-native";
 import { connect } from "react-redux";
 import { useIsFocused } from "@react-navigation/native";
 import { ListItem } from "react-native-elements";
-import { Ionicons } from '@expo/vector-icons'; 
+import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function Interest(props) {
   const [poiList, setPoiList] = useState([]);
+  const [allPoiList, setAllPoiList] = useState([]);
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    function getPoiFromStore() {
-      let poi = props.poi;
-      console.log("int", poi);
-      setPoiList(poi);
+    function getPoiFromAsyncStorage() {
+      AsyncStorage.getItem("poi", function (error, data) {
+        data = JSON.parse(data);
+        setAllPoiList(data)
+        data = data.filter((e) => e.pseudo === props.pseudo);
+        setPoiList(data);
+      });
     }
-    getPoiFromStore();
+    getPoiFromAsyncStorage();
   }, [isFocused]);
 
-  var deletePoi = (i) => {
+  var deletePoi = (poi,i) => {
     var updatePoi = [...poiList];
-    updatePoi.splice(i,1)
-    setPoiList(updatePoi)
-    props.deletePoi(i)
-  }
+    updatePoi.splice(i, 1);
+    setPoiList(updatePoi);
+    props.deletePoi(i);
+    console.log(allPoiList.length)
+    let poideleted = [...allPoiList].filter(e=> e!=poi)
+    AsyncStorage.setItem("poi", JSON.stringify(poideleted))
+  };
 
   let myPoi = poiList.map((poi, i) => {
     return (
       <ListItem
-         key={i}
-          bottomDivider
-          containerStyle={{ backgroundColor: "#faf0ca" }}
+        key={i}
+        bottomDivider
+        containerStyle={{ backgroundColor: "#faf0ca" }}
+      >
+        <ListItem.Content
+          style={{ flexDirection: "row", justifyContent: "space-between" }}
         >
-          <ListItem.Content style={{flexDirection:"row", justifyContent:"space-between"}}>
-            <View>
+          <View>
             <ListItem.Title>Titre : {poi.title}</ListItem.Title>
             <ListItem.Subtitle>Desc : {poi.desc}</ListItem.Subtitle>
-            </View>
-            <Ionicons name="ios-trash" size={24} color="grey" onPress={() => deletePoi(i)} />
-          </ListItem.Content>
-        </ListItem>
-
-    )
-  })
+          </View>
+          <Ionicons
+            name="ios-trash"
+            size={24}
+            color="grey"
+            onPress={() => deletePoi(poi,i)}
+          />
+        </ListItem.Content>
+      </ListItem>
+    );
+  });
 
   return (
     <View style={styles.container}>
-      <ScrollView style={{ flex: 1, marginTop: 50 }}>
-        {myPoi}
-      </ScrollView>
+      <ScrollView style={{ flex: 1, marginTop: 50 }}>{myPoi}</ScrollView>
     </View>
   );
 }
 
 function mapStateToProps(state) {
-  return { poi: state.poi };
+  return { poi: state.poi, pseudo: state.pseudo };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    deletePoi: function(index) {
-    dispatch( {type: 'deletePoi', index: index })
-    }
-  }
+    deletePoi: function (index) {
+      dispatch({ type: "deletePoi", index: index });
+    },
+  };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Interest);
