@@ -17,8 +17,10 @@ function Interest(props) {
       AsyncStorage.getItem("poi", function (error, data) {
         data = JSON.parse(data);
         setAllPoiList(data)
-        data = data.filter((e) => e.pseudo === props.pseudo);
-        setPoiList(data);
+        if(data){
+          data = data.filter((e) => e.pseudo === props.pseudo);
+          setPoiList(data);
+        }
       });
     }
     getPoiFromAsyncStorage();
