@@ -27,7 +27,7 @@ function Home(props) {
         title="Go to ChatScreen"
         buttonStyle={{ backgroundColor: "#6096ba", marginTop: 50, }}
         onPress={() => {
-          props.sendPseudo(pseudo),
+          props.sendPseudo(pseudoInLocalStorage),
           props.navigation.navigate("BottomNav")
         }}
       />
