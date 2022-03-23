@@ -9,6 +9,8 @@ import { Button, Overlay, Input } from "react-native-elements";
 import { Ionicons } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import socketIOClient from "socket.io-client";
+var socket = socketIOClient("https://locapic-backend-ek.herokuapp.com/");
 
 function Map(props) {
   const isFocused = useIsFocused();
@@ -24,6 +26,7 @@ function Map(props) {
   const [POIList, setPOIList] = useState([]);
   const [overlayIsVisible, setOverlayIsVisible] = useState(false);
   const [allPoiList, setAllPoiList] = useState([]);
+  const [usersPosition, setUsersPosition] = useState([])
 
   useEffect(() => {
     async function askPermissions() {
@@ -32,8 +35,11 @@ function Map(props) {
       AsyncStorage.getItem("poi", function (error, data) {
         data = JSON.parse(data);
         setAllPoiList(data);
-        data = data.filter((e) => e.pseudo === props.pseudo);
-        setPOIList(data);
+        if(data) {
+          data = data.filter((e) => e.pseudo === props.pseudo);
+          setPOIList(data);
+        }
+
       });
       if (status === "granted") {
         // Position à la connexion → Servira à centrer la carte sur
@@ -44,6 +50,19 @@ function Map(props) {
         Location.watchPositionAsync({ distanceInterval: 1 }, (loc) => {
           setMyLatitude(loc.coords.latitude);
           setMyLongitude(loc.coords.longitude);
+          socket.emit("sendPosition", {name:props.pseudo, lat: loc.coords.latitude , lon: loc.coords.longitude});
+        });
+        // Position des autres users
+        socket.on('sendPositionFromBack', (position)=> {         
+          if(usersPosition.findIndex(e => e.pseudo === position.pseudo) != -1) {
+            var userPositionsCopy = [...usersPosition]
+            var index = usersPosition.findIndex(e => e.pseudo === position.pseudo)
+            userPositionsCopy.splice(index,1,position)
+            setUsersPosition(userPositionsCopy)
+          } else {
+            setUsersPosition([...usersPosition, position])
+          }
+          
         });
       }
     }
@@ -133,6 +152,21 @@ function Map(props) {
     });
   }
 
+   // Création des Markers de Users
+   if (usersPosition.length > 0) {
+    var usersMarkers = usersPosition.map((element, i) => {
+      console.log("position", element)
+      return (
+        <Marker
+          key={i}
+          pinColor="green"
+          coordinate={{ latitude: element.lat, longitude: element.lon }}
+          title={element.pseudo}
+        />
+      );
+    });
+  }
+
   return (
     <View style={{ flex: 1 }}>
       <Overlay
@@ -176,6 +210,7 @@ function Map(props) {
         onPress={(e) => addPoiCoords(e.nativeEvent.coordinate)}
       >
         {POIMarkers}
+        {usersMarkers}
         {myLatitude && myLongitude && pseudo ? (
           <Marker
             coordinate={{ latitude: myLatitude, longitude: myLongitude }}
